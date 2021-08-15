@@ -30,13 +30,29 @@ gameScene.create = function () {
     this.goal = this.add.sprite(config.width - 80, config.height/2, 'treasure')
         .setScale(.5)
 
-    this.enemy = this.add.sprite(250, 180, 'enemy')
-        .setScale(.5)        
-    this.enemy.flipX = true
 
-    let direction = Math.random() < 0.5? 1 : -1
-    let speed = this.enemyMinSpeed + Math.random() * (this.enemyMaxSpeed - this.enemyMinSpeed)
-    this.enemySpeed = direction * speed
+        this.enemies = this.add.group( {
+            key: 'enemy',
+            repeat: 4,
+            setXY: {
+                x: 100,
+                y: 100,
+                stepX: 100,
+                stepY: 20
+            }
+        })
+
+    Phaser.Actions.ScaleXY(this.enemies.getChildren(), -0.5, -0.5)
+
+    Phaser.Actions.Call(this.enemies.getChildren(), function(enemy) {
+        enemy.flipX = true
+        let direction = Math.random() < 0.5? 1 : -1
+        let speed = this.enemyMinSpeed + Math.random() * (this.enemyMaxSpeed - this.enemyMinSpeed)
+        enemy.speed = direction * speed
+
+    }, this)
+
+
 
     
 };
@@ -47,26 +63,40 @@ gameScene.update = function() {
         this.player.x += this.playerSpeed
     }
 
-
-
     let playerRect = this.player.getBounds()
     let goalRect = this.goal.getBounds()
-
 
     if(Phaser.Geom.Intersects.RectangleToRectangle(playerRect, goalRect)) {
         this.scene.restart()
     }
     
+    let enemies = this.enemies.getChildren()
+    let numEnemies = enemies.length
 
 
-    this.enemy.y += this.enemySpeed
+    for (let i=0; i<numEnemies; i++) {
+        enemies[i].y += enemies[i].speed
 
-    if (this.enemy.y <= this.enemyMinY || this.enemy.y >= this.enemyMaxY) {
-        this.enemySpeed *= -1
+        let conditionUp = enemies[i].y <= this.enemyMinY
+        let conditionDown = enemies[i].y >= this.enemyMaxY
+
+        if (conditionUp || conditionDown) {
+            enemies[i].speed *= -1
+        }
+
+        let enemyRect = enemies[i].getBounds()
+
+        if(Phaser.Geom.Intersects.RectangleToRectangle(playerRect, enemyRect)) {
+            this.scene.restart()
+            return
+            
+        }
+
+
     }
-    
 
 }
+
 
 let config = {
     type: Phaser.AUTO,
