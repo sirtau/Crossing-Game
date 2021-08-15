@@ -1,5 +1,5 @@
 # Crossing Game
-Simple phaser game
+Simple phaser game, coded for learning purposes.
 
 
 ## How to Play
