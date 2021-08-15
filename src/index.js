@@ -11,7 +11,13 @@ gameScene.preload = function () {
 
 
 gameScene.init = function() {
-    this.playerSpeed = 2
+    this.playerSpeed = 3
+
+    this.enemySpeed = 3
+    this.enemyMinY = 80
+    this.enemyMaxY = 280
+    this.enemyMinSpeed = 1
+    this.enemyMaxSpeed = 4
 }
 
 gameScene.create = function () {
@@ -24,11 +30,14 @@ gameScene.create = function () {
     this.goal = this.add.sprite(config.width - 80, config.height/2, 'treasure')
         .setScale(.5)
 
-    this.enemy1 = this.add.sprite(250, 180, 'enemy')
-        .setScale(.5)
+    this.enemy = this.add.sprite(250, 180, 'enemy')
+        .setScale(.5)        
+    this.enemy.flipX = true
 
-    this.enemy2 = this.add.sprite(450, 180, 'enemy')
-        .setScale(.5)
+    let direction = Math.random() < 0.5? 1 : -1
+    let speed = this.enemyMinSpeed + Math.random() * (this.enemyMaxSpeed - this.enemyMinSpeed)
+    this.enemySpeed = direction * speed
+
     
 };
 
@@ -39,6 +48,7 @@ gameScene.update = function() {
     }
 
 
+
     let playerRect = this.player.getBounds()
     let goalRect = this.goal.getBounds()
 
@@ -47,6 +57,13 @@ gameScene.update = function() {
         this.scene.restart()
     }
     
+
+
+    this.enemy.y += this.enemySpeed
+
+    if (this.enemy.y <= this.enemyMinY || this.enemy.y >= this.enemyMaxY) {
+        this.enemySpeed *= -1
+    }
     
 
 }
