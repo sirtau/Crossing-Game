@@ -1,4 +1,4 @@
-# Crossing-Game
+# Crossing Game
 Simple phaser game
 
 ## How to Play
