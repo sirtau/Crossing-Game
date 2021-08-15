@@ -3,7 +3,7 @@ Simple phaser game
 
 
 ## How to Play
-Link: https://ztau.itch.io/crossing-game
+Link: https://ztau.itch.io/crossing-game  
 Touch/Click screen to move. Avoid dragons and try to get to the Treasure.
 
 ## Development
