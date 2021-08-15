@@ -18,6 +18,7 @@ gameScene.init = function() {
     this.enemyMaxY = 280
     this.enemyMinSpeed = 1
     this.enemyMaxSpeed = 4
+    this.isTerminating = false
 }
 
 gameScene.create = function () {
@@ -52,12 +53,10 @@ gameScene.create = function () {
 
     }, this)
 
-
-
-    
 };
 
 gameScene.update = function() {
+    if(this.isTerminating) return
 
     if(this.input.activePointer.isDown) {
         this.player.x += this.playerSpeed
@@ -67,14 +66,14 @@ gameScene.update = function() {
     let goalRect = this.goal.getBounds()
 
     if(Phaser.Geom.Intersects.RectangleToRectangle(playerRect, goalRect)) {
-        this.scene.restart()
+        console.log('Win')
+        return this.gameOver()
     }
     
     let enemies = this.enemies.getChildren()
-    let numEnemies = enemies.length
+    // Returns an array of the Enemies
 
-
-    for (let i=0; i<numEnemies; i++) {
+    for (let i=0; i< enemies.length; i++) {
         enemies[i].y += enemies[i].speed
 
         let conditionUp = enemies[i].y <= this.enemyMinY
@@ -83,20 +82,38 @@ gameScene.update = function() {
         if (conditionUp || conditionDown) {
             enemies[i].speed *= -1
         }
-
+        
         let enemyRect = enemies[i].getBounds()
-
         if(Phaser.Geom.Intersects.RectangleToRectangle(playerRect, enemyRect)) {
-            this.scene.restart()
-            return
+            console.log('Hit. Restarting!')
+            return this.gameOver()
+
             
         }
-
 
     }
 
 }
 
+
+gameScene.gameOver = function() {
+
+    this.cameras.main.shake(500, .01)
+    this.isTerminating = true
+
+    this.cameras.main.on('camerashakecomplete', function() {
+
+        this.cameras.main.fade(200)
+     
+    }, this )
+
+    this.cameras.main.on('camerafadeoutcomplete', function() {
+        this.isTerminating = false
+
+        return this.scene.restart()
+    }, this )
+
+}
 
 let config = {
     type: Phaser.AUTO,
